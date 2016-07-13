@@ -87,4 +87,9 @@ public static class TransformExtensionMethods {
 	#endregion
 	#endregion
 
+	public static void ResetPosAndRot(this Transform transf){
+		transf.position = Vector3.zero;
+		transf.rotation = Quaternion.identity;
+	}
+
 }
