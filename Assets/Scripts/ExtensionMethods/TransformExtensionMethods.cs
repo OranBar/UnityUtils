@@ -92,4 +92,18 @@ public static class TransformExtensionMethods {
 		transf.rotation = Quaternion.identity;
 	}
 
+	public static Transform FindChildRecursive(this Transform transform, string childName){
+		foreach(Transform t in transform){
+			if(t.name == childName){
+				return t;
+			} else {
+				Transform transf = FindChildRecursive (t, childName);
+				if(transf!=null){
+					return transf;
+				}
+			}
+		}
+		return null;
+	}
+
 }
