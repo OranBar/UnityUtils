@@ -88,8 +88,8 @@ public static class TransformExtensionMethods {
 	#endregion
 
 	public static void ResetPosAndRot(this Transform transf){
-		transf.position = Vector3.zero;
-		transf.rotation = Quaternion.identity;
+		transf.localPosition = Vector3.zero;
+		transf.localRotation = Quaternion.identity;
 	}
 
 	public static Transform FindChildRecursive(this Transform transform, string childName){
