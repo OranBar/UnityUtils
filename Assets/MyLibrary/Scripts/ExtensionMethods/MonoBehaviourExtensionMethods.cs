@@ -71,24 +71,28 @@ namespace OranUnityUtils
 
 			MoveLocal(monoBehaviour, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
 		}
+
+		public static void SmoothDampMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Vector3 startVelocity, Action onMoveEnd=null){
+			monoBehaviour.StartCoroutine(SmoothDampCoroutine(monoBehaviour.transform, endPosition, startVelocity, duration, onMoveEnd));
+		}
 		#endregion
 
 
 		private static void Move(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd){
 			Vector3 startPosition = monoBehaviour.transform.position;
 			Action<Vector3> positionSetterFunc = (p)=> monoBehaviour.transform.position = p;
-			monoBehaviour.StartCoroutine(MoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
+			monoBehaviour.StartCoroutine(LerpMoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
 		}
 
 		private static void MoveLocal(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd){
 			Vector3 startPosition = monoBehaviour.transform.localPosition;
 			Action<Vector3> positionSetterFunc = (p)=> monoBehaviour.transform.localPosition = p;
-			monoBehaviour.StartCoroutine(MoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
+			monoBehaviour.StartCoroutine(LerpMoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
 		}
 
 
 
-		private static IEnumerator MoveCoroutine(Action<Vector3> valueSetterFunc, Vector3 start, Vector3 end, float duration, 
+		private static IEnumerator LerpMoveCoroutine(Action<Vector3> valueSetterFunc, Vector3 start, Vector3 end, float duration, 
 			Func<float, float> tCurve, Action onMoveEnd){
 
 			float currentLerpTime=0f;
@@ -102,6 +106,19 @@ namespace OranUnityUtils
 				}
 				float t = currentLerpTime / duration;
 				valueSetterFunc(Vector3.Lerp(start, end, tCurve(t)));
+			}
+			onMoveEnd.Do (x => x ());
+		}
+
+		private static IEnumerator SmoothDampCoroutine(Transform objTransf, Vector3 endPosition, Vector3 startVelocity, float duration, Action onMoveEnd){
+			float currentLerpTime=0f;
+			Vector3 velocity = startVelocity;
+
+			while(currentLerpTime < duration){
+				yield return null;
+				currentLerpTime += Time.deltaTime;
+
+				objTransf.position = Vector3.SmoothDamp(objTransf.position, endPosition, ref velocity, duration);
 			}
 			onMoveEnd.Do (x => x ());
 		}
@@ -140,18 +157,18 @@ namespace OranUnityUtils
 		private static void Rotate(this MonoBehaviour monoBehaviour, Quaternion endRotation, float duration, Func<float, float> tFunc ){
 			Quaternion startRotation = monoBehaviour.transform.rotation;
 			Action<Quaternion> positionSetterFunc = (p)=> monoBehaviour.transform.rotation = p;
-			monoBehaviour.StartCoroutine(RotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+			monoBehaviour.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
 		}
 
 		private static void RotateLocal(this MonoBehaviour monoBehaviour, Quaternion endRotation, float duration, Func<float, float> tFunc){
 			Quaternion startRotation = monoBehaviour.transform.rotation;
 			Action<Quaternion> positionSetterFunc = (p)=> monoBehaviour.transform.localRotation = p;
-			monoBehaviour.StartCoroutine(RotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+			monoBehaviour.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
 		}
 
 
 
-		private static IEnumerator RotateCoroutine(Action<Quaternion> valueSetterFunc, Quaternion start, Quaternion end, float duration, 
+		private static IEnumerator LerpRotateCoroutine(Action<Quaternion> valueSetterFunc, Quaternion start, Quaternion end, float duration, 
 			Func<float, float> tCurve){
 
 			float currentLerpTime=0f;
