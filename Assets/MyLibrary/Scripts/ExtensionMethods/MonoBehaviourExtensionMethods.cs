@@ -100,7 +100,7 @@ namespace OranUnityUtils
 			while(currentLerpTime < duration){
 				yield return null;
 				currentLerpTime += Time.deltaTime;
-			
+
 				if(currentLerpTime > duration){
 					currentLerpTime = duration;
 				}
@@ -111,14 +111,17 @@ namespace OranUnityUtils
 		}
 
 		private static IEnumerator SmoothDampCoroutine(Transform objTransf, Vector3 endPosition, Vector3 startVelocity, float duration, Action onMoveEnd){
-			float currentLerpTime=0f;
 			Vector3 velocity = startVelocity;
+			float t = duration;
 
-			while(currentLerpTime < duration){
+			while(t > 0){
 				yield return null;
-				currentLerpTime += Time.deltaTime;
+				t -= Time.deltaTime;
 
-				objTransf.position = Vector3.SmoothDamp(objTransf.position, endPosition, ref velocity, duration);
+				if(t < 0f){
+					t = 0f;
+				}
+				objTransf.position = Vector3.SmoothDamp(objTransf.position, endPosition, ref velocity, t);
 			}
 			onMoveEnd.Do (x => x ());
 		}
@@ -191,5 +194,4 @@ namespace OranUnityUtils
 
 	}
 }
-
 
