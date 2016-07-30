@@ -111,31 +111,6 @@ public static class StringExtensions
     // GetWordCount
     #endregion
 
-    #region IsValidEmail
-
-    /// <summary>
-    /// Returns true if the email address is valid
-    /// </summary>
-    /// <param name="email"></param>
-    /// <returns></returns>
-    public static bool IsValidEmail(this string email)
-    {
-        // fail if null or too long
-        if ((string.IsNullOrEmpty(email)) || (email.Length > 100))
-            return false;
-
-        //// set to ignore case
-        //Regex regex = new Regex(STR_EmailPattern, RegexOptions.IgnoreCase);
-        //// return if the regex matches
-        //return regex.IsMatch(email);
-
-
-        // use the MSDN email validator
-        return new EmailValidator().IsValidEmail(email);
-    }
-
-    // IsValidEmail
-    #endregion
 
     #region IsValidIPAddress
 
