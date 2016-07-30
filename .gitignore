@@ -1,12 +1,7 @@
 Library/
 ProjectSettings/
+Temp/
 Library.userprefs
 Assembly-CSharp.csproj
-Assets/ConsoleE/Editor.meta
-Assets/ConsoleE/Editor/ConsoleE.dll.meta
-Assets/ConsoleE/Editor/Extensions.zip
-Assets/ConsoleE/Editor/Extensions.zip.meta
-Assets/ConsoleE/Editor/readme.html
-Assets/ConsoleE/Editor/readme.html.meta
-Assets/ConsoleE.meta
+
 Library.sln
