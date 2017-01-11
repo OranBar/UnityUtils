@@ -2,7 +2,7 @@
 using System.Collections;
 
 [ExecuteInEditMode()]
-public class OBMonoBehaviour : MonoBehaviour {
+public abstract class AEditModeExecutor : MonoBehaviour {
 
 	public void Update(){
 #if UNITY_EDITOR
@@ -14,11 +14,9 @@ public class OBMonoBehaviour : MonoBehaviour {
 #endif
 	}
 
-	protected virtual void OnUpdate(){
+	protected abstract void OnUpdate(){
 		
 	}
 
-	protected virtual void EditorUpdate(){
-
-	}
+    protected abstract void EditorUpdate();
 }
