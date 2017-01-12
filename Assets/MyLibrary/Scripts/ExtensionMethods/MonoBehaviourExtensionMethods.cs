@@ -5,8 +5,8 @@ using UnityEngine.Assertions;
 
 namespace OranUnityUtils
 {
-	public static class MonoBehaviourExtensionMethods
-	{
+	public static class MonoBehaviourExtensionMethods {
+
 		#region Coroutines: Coroutine Timeline and SuperCoroutine
 		/// <summary>
 		/// Starts a coroutine timeline, executing each routine in order.
@@ -33,102 +33,58 @@ namespace OranUnityUtils
 		#endregion
 
 		public static void ExecuteDelayed(this MonoBehaviour monoBehaviour, Action action, float delay){
-			monoBehaviour.StartCoroutineTimeline(
-				monoBehaviour.WaitForSeconds_Coro(delay),
-				monoBehaviour.ToIEnum( action )
-			);
+            monoBehaviour.gameObject.ExecuteDelayed(action, delay);
+        }
+
+        public static Coroutine LerpLocalScale(this MonoBehaviour monoBehaviour, Vector3 endLocalScale, float duration, Action onScaleEnd = null) {
+            return monoBehaviour.gameObject.LerpLocalScale(endLocalScale, duration, onScaleEnd);
+        }
+        
+        #region GameObject Movement and Rotation Advanced Lerps
+        #region Movement
+
+        public static Coroutine MoveWithCurve(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
+            return monoBehaviour.gameObject.MoveWithCurve(endPosition, duration, curve, onMoveEnd);
+        }
+
+        public static Coroutine MoveWithCurveUI(this MonoBehaviour monoBehaviour, Vector2 localEndPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
+            return monoBehaviour.gameObject.MoveWithCurveUI(  localEndPosition,  duration,  curve,  onMoveEnd );
+        }
+
+        #endregion
+
+        #region Functions
+
+        public static Coroutine LerpMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Action onMoveEnd=null){
+            return monoBehaviour.gameObject.LerpMove(endPosition, duration, onMoveEnd );
+
+            }
+
+		public static Coroutine LerpMoveLocal(this MonoBehaviour monoBehaviour, Vector3 localEndPosition, float duration, Action onMoveEnd=null){
+            return monoBehaviour.gameObject.LerpMoveLocal(localEndPosition, duration, onMoveEnd);
 		}
 
-		#region MonoBehaviour's GameObject Movement and Rotation Advanced Lerps
-		#region Movement
-		#region Functions
-		public static void MoveWithCurve(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, AnimationCurve curve, Action onMoveEnd=null){
-			Func<float, float> tSmoothStepFunc = (t) => { return curve.Evaluate(t);};
+        public static Coroutine LerpMoveUI(this MonoBehaviour monoBehaviour, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
+            return monoBehaviour.gameObject.LerpMoveUI(targetAnchoredPosition, duration, onMoveEnd);
+        }
 
-			Move(monoBehaviour, endPosition, duration, tSmoothStepFunc, onMoveEnd);
+        public static Coroutine SmoothstepMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Action onMoveEnd=null){
+            return monoBehaviour.gameObject.SmoothstepMove(endPosition, duration, onMoveEnd );
+        }
+
+		public static Coroutine SmoothstepMoveLocal(this MonoBehaviour monoBehaviour, Vector3 localEndPosition, float duration, Action onMoveEnd=null){
+            return monoBehaviour.gameObject.SmoothstepMoveLocal(localEndPosition, duration, onMoveEnd );
+        }
+
+        public static Coroutine SmoothstepMoveUI(this MonoBehaviour monoBehaviour, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
+            return monoBehaviour.gameObject.SmoothstepMoveUI(targetAnchoredPosition, duration, onMoveEnd);
+        }
+
+        public static Coroutine SmoothDampMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Vector3 startVelocity, Action onMoveEnd=null){
+            return monoBehaviour.gameObject.SmoothDampMove(endPosition, duration, startVelocity, onMoveEnd);
 		}
-
-		public static void LerpMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Action onMoveEnd=null){
-			Func<float, float> tLinearFunc = (t) => { return t;};
-
-			Move(monoBehaviour, endPosition, duration, tLinearFunc, onMoveEnd);
-		}
-
-		public static void LerpMoveLocal(this MonoBehaviour monoBehaviour, Vector3 localEndPosition, float duration, Action onMoveEnd=null){
-			Func<float, float> tLinearFunc = (t) => { return t;};
-
-			MoveLocal(monoBehaviour, localEndPosition, duration, tLinearFunc, onMoveEnd);
-		}
-
-		public static void SmoothstepMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Action onMoveEnd=null){
-			Func<float, float> tSmoothStepFunc = (t) => { return t*t*t * (t * (6f*t - 15f) + 10f);};
-
-			Move(monoBehaviour, endPosition, duration, tSmoothStepFunc, onMoveEnd);
-		}
-
-		public static void SmoothstepMoveLocal(this MonoBehaviour monoBehaviour, Vector3 localEndPosition, float duration, Action onMoveEnd=null){
-			Func<float, float> tSmoothStepFunc = (t) => { return t*t*t * (t * (6f*t - 15f) + 10f);};
-
-			MoveLocal(monoBehaviour, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
-		}
-
-		public static void SmoothDampMove(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Vector3 startVelocity, Action onMoveEnd=null){
-			monoBehaviour.StartCoroutine(SmoothDampCoroutine(monoBehaviour.transform, endPosition, startVelocity, duration, onMoveEnd));
-		}
-		#endregion
-
-
-		private static void Move(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd){
-			Vector3 startPosition = monoBehaviour.transform.position;
-			Action<Vector3> positionSetterFunc = (p)=> monoBehaviour.transform.position = p;
-			monoBehaviour.StartCoroutine(LerpMoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
-		}
-
-		private static void MoveLocal(this MonoBehaviour monoBehaviour, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd){
-			Vector3 startPosition = monoBehaviour.transform.localPosition;
-			Action<Vector3> positionSetterFunc = (p)=> monoBehaviour.transform.localPosition = p;
-			monoBehaviour.StartCoroutine(LerpMoveCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
-		}
-
-
-
-		private static IEnumerator LerpMoveCoroutine(Action<Vector3> valueSetterFunc, Vector3 start, Vector3 end, float duration, 
-			Func<float, float> tCurve, Action onMoveEnd){
-
-			float currentLerpTime=0f;
-
-			while(currentLerpTime < duration){
-				yield return null;
-				currentLerpTime += Time.deltaTime;
-
-				if(currentLerpTime > duration){
-					currentLerpTime = duration;
-				}
-				float t = currentLerpTime / duration;
-				valueSetterFunc(Vector3.Lerp(start, end, tCurve(t)));
-			}
-			onMoveEnd.Do (x => x ());
-		}
-
-		private static IEnumerator SmoothDampCoroutine(Transform objTransf, Vector3 endPosition, Vector3 startVelocity, float duration, Action onMoveEnd){
-			Vector3 velocity = startVelocity;
-			float t = duration;
-
-			while(t > 0){
-				yield return null;
-				t -= Time.deltaTime;
-
-				if(t < 0f){
-					t = 0f;
-				}
-				objTransf.position = Vector3.SmoothDamp(objTransf.position, endPosition, ref velocity, t);
-			}
-			onMoveEnd.Do (x => x ());
-		}
-
-
-		#endregion
-
+        #endregion
+        
 		#region Rotations
 		#region Functions
 		public static void LerpRotate(this MonoBehaviour monoBehaviour, Quaternion endRotation, float duration){
@@ -187,11 +143,10 @@ namespace OranUnityUtils
 				valueSetterFunc(Quaternion.Lerp(start, end, tCurve(t)));
 			}
 		}
-		#endregion 
+        #endregion
 
-		#endregion
+        #endregion
 
-
-	}
+         
+    }
 }
-

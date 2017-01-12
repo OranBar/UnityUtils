@@ -14,9 +14,7 @@ public abstract class AEditModeExecutor : MonoBehaviour {
 #endif
 	}
 
-	protected abstract void OnUpdate(){
-		
-	}
+    protected abstract void OnUpdate();
 
     protected abstract void EditorUpdate();
 }
