@@ -1,25 +1,22 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using IMX.ExtensionMethods;
+using OranUnityUtils;
 using System;
 
-/**<summary>This class allows for a 2D object to become draggable using touch input</summary>
- * <author>Oran Bar</author>
- */
 [RequireComponent(typeof(Rigidbody2D))]
 public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	
-	[Tooltip("This parameter can be null")]
+	[Tooltip("The class will work fine if the parameter is null. If this parameter is null, the class will grab a reference to a button component on this object, if it exists. ")]
 	public Button disableButtonOnDrag;
 	[Header("Momentum settings")]
 	public bool useDrag = true;
 	public float releaseDrag = 0.9f;
-	public float speedMultOnRelease = 5f;
+	public float speedMultOnRelease = 3f;
 	protected bool isPressed = false;
 	protected RectTransform myRectTransform;
 
@@ -36,6 +33,9 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	private int draggingTouchIndex = -1;
 
 	protected virtual void Awake() {
+		if (disableButtonOnDrag == null) {
+			disableButtonOnDrag = GetComponent<Button>();
+		}
 		myRb = GetComponent<Rigidbody2D>();
 	}
 
@@ -53,10 +53,6 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 			PointerUp ();
 		}
 
-		if (useDrag) {
-			myRb.velocity *= releaseDrag;
-		}
-
 		if (isPressed) {
 			if (Time.time - timeWhenPressed > buttonDisable_Delay) {
 				disableButtonOnDrag.IfNotNull(b => b.interactable = false);
@@ -66,12 +62,17 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 			}
 
 			if (Time.time - timeWhenPressed > dragDelay) {
-				myRb.MovePosition(Input.GetTouch(draggingTouchIndex).position);
-			}
+                if (InputEx.GetTouchById(draggingTouchIndex).HasValue) {
+                    Vector2 position = InputEx.GetTouchById(draggingTouchIndex).Value.position;
+                    myRb.MovePosition(position);
+                }
+
+            }
 		}
-		
 		prevPosition = this.transform.position;
-		
+		if (useDrag) {
+			myRb.velocity *= releaseDrag;
+		}
 	}
 
 	public bool DragTouchEnded() {
