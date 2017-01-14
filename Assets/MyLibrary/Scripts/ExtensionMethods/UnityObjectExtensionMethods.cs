@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace OranUnityUtils
+namespace IMX.ExtensionMethods
 {
 	public static class UnityObjectExtensionMethods 
 	{

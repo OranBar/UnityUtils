@@ -2,11 +2,11 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using OranUnityUtils;
+using IMX.ExtensionMethods;
 
 public class AnimationScript : IAnim {
 
-    public event UnityAction OnAnimationFinish;
+    public override event UnityAction OnAnimationFinish;
 
     protected Func<Coroutine> animationFunction { get; set; }
     private Coroutine myAnimationCoroutine;
@@ -19,6 +19,7 @@ public class AnimationScript : IAnim {
     private bool isAnimDone = false;
 
     private bool wasInitialized = false;
+
 
     public AnimationScript() {
 
@@ -40,19 +41,22 @@ public class AnimationScript : IAnim {
     }
 
 
-    public Coroutine StartAnimation() {
+    public override Coroutine StartAnimation() {
         if(wasInitialized==false) { Debug.LogError("AnimationScript has not been initialized"); }
-        
+
+        //myAnimationCoroutine = coroutineHost.StartCoroutine_Tracked(this, myAnimation_coro);
         myAnimationCoroutine = coroutineHost.StartCoroutine(myAnimation_coro);
         coroutineHost.StartCoroutine( SetDoneWhenFinished_Coro(myAnimationCoroutine) );
         hasAnimBegun = true;
         return myAnimationCoroutine;
     }
 
-    private IEnumerator SetDoneWhenFinished_Coro(Coroutine coro) {
+    protected IEnumerator SetDoneWhenFinished_Coro(Coroutine coro) {
         yield return coro;
         isAnimDone = true;
-        OnAnimationFinish.Do( x => x() );
+        if(OnAnimationFinish != null) {
+            OnAnimationFinish();
+        }
     }
 
     public Coroutine GetCoroutine() {
@@ -60,12 +64,12 @@ public class AnimationScript : IAnim {
         return myAnimationCoroutine;
     }
     
-    public bool IsPlaying() {
+    public override bool IsPlaying() {
         if (wasInitialized == false) { Debug.LogError("AnimationScript has not been initialized"); }
         return hasAnimBegun && isAnimDone == false;
     }
 
-    public bool IsDone() {
+    public override bool IsDone() {
         if (wasInitialized == false) { Debug.LogError("AnimationScript has not been initialized"); }
         return hasAnimBegun && isAnimDone;
     }

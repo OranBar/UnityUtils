@@ -14,7 +14,7 @@ public abstract class RadialButtonSelector<E> : MonoBehaviour {
     public bool useSpringJoints = true;
    
     private int pooledNodes {
-        get { return maxActiveNodes;}
+        get { return maxActiveNodes; }
         set { }
     }
 

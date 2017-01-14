@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using OranUnityUtils;
 
-namespace OranUnityUtils 
+
+namespace IMX.ExtensionMethods 
 {
     public static class GameObjectExtensionMethods {
 
@@ -23,17 +23,13 @@ namespace OranUnityUtils
                 return go.GetComponent<MonoBehaviour>();
             }
         }
-
-        public static Coroutine StartCoroutine(this GameObject go, IEnumerator routine) {
-            return go.AddOrGetComponent<CoroutineHelper>().StartCoroutine(routine);
-        }
-
-        #region Coroutines: Coroutine Timeline and SuperCoroutine
+     
+        #region Coroutines: SuperCoroutine Timeline and SuperCoroutine
         /// <summary>
-        /// Starts a coroutine timeline, executing each routine in order.
+        /// Starts a SuperCoroutine timeline, executing each routine in order.
         /// Each routine waits for the previous one to finish before executing
         /// </summary>
-        /// <returns>The coroutine timeline.</returns>
+        /// <returns>The SuperCoroutine timeline.</returns>
         /// <param name="routines">Routines.</param>
         public static Coroutine StartCoroutineTimeline(this GameObject go, params IEnumerator[] routines) {
             return go.AddOrGetComponent<CoroutineHelper>().StartCoroutine(go.StartCoroutineTimeline_Coro(routines));
@@ -45,12 +41,18 @@ namespace OranUnityUtils
             }
         }
 
-
-        public static SuperCoroutine<T> StartCoroutine<T>(this GameObject go, IEnumerator coroutine) {
-            SuperCoroutine<T> coroutineObject = new SuperCoroutine<T>();
-            coroutineObject.coroutine = go.AddOrGetComponent<CoroutineHelper>().StartCoroutine(coroutineObject.RoutineWithReturn(coroutine));
-            return coroutineObject;
+        public static Coroutine StartCoroutine(this GameObject go, IEnumerator routine) {
+            return go.AddOrGetComponent<CoroutineHelper>().StartCoroutine(routine);
         }
+
+        public static SuperCoroutine<E> StartCoroutine<E>(this GameObject go, IEnumerator routine) {
+            return go.AddOrGetComponent<CoroutineHelper>().StartCoroutine<E>(routine);
+        }
+
+        public static SuperCoroutine StartStoppableCoroutine(this GameObject go, IEnumerator routine) {
+            return go.AddOrGetComponent<CoroutineHelper>().StartStoppableCoroutine(routine);
+        }
+
         #endregion
 
         public static void ExecuteDelayed(this GameObject go, Action action, float delay) {
@@ -60,92 +62,41 @@ namespace OranUnityUtils
             );
         }
 
-        public static Coroutine LerpLocalScale(this GameObject go, Vector3 endLocalScale, float duration, Action onScaleEnd = null) {
-            Func<float, float> tLinearFunc = (t) => { return t; };
-            Vector3 startScale = go.transform.localScale;
-            Action<Vector3> scaleSetterFunction = (p) => go.transform.localScale = p;
+        
 
-            return go.AddOrGetComponent<CoroutineHelper>().StartCoroutine(LerpCoroutine(scaleSetterFunction, startScale, endLocalScale, duration, tLinearFunc, onScaleEnd));
-        }
-
-        #region MonoBehaviour's GameObject Movement and Rotation Advanced Lerps
+        #region MonoBehaviour's GameObject Movement, Rotation and Scaling Advanced Lerps
         #region Movement
 
-        public static Coroutine MoveWithCurve(this GameObject go, Vector3 endPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
+        public static SuperCoroutine MoveWithCurve(this GameObject go, Vector3 endPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
             Func<float, float> tSmoothStepFunc = (t) => { return curve.Evaluate(t); };
 
             return Move(go, endPosition, duration, tSmoothStepFunc, onMoveEnd);
         }
 
-        public static Coroutine MoveWithCurveUI(this GameObject go, Vector2 localEndPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
+        public static SuperCoroutine MoveWithCurveUI(this GameObject go, Vector2 localEndPosition, float duration, AnimationCurve curve, Action onMoveEnd = null) {
             Func<float, float> tSmoothStepFunc = (t) => { return curve.Evaluate(t); };
 
             return MoveUI(go, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
         }
 
-        #region Functions
-
-        public static Coroutine LerpMove(this GameObject go, Vector3 endPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tLinearFunc = (t) => { return t; };
-
-            return Move(go, endPosition, duration, tLinearFunc, onMoveEnd);
-        }
-
-        public static Coroutine LerpMoveLocal(this GameObject go, Vector3 localEndPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tLinearFunc = (t) => { return t; };
-
-            return MoveLocal(go, localEndPosition, duration, tLinearFunc, onMoveEnd);
-        }
-
-        public static Coroutine LerpMoveUI(this GameObject go, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tLinearFunc = (t) => { return t; };
-
-            return MoveUI(go, targetAnchoredPosition, duration, tLinearFunc, onMoveEnd);
-        }
-
-        public static Coroutine SmoothstepMove(this GameObject go, Vector3 endPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
-
-            return Move(go, endPosition, duration, tSmoothStepFunc, onMoveEnd);
-        }
-
-        public static Coroutine SmoothstepMoveLocal(this GameObject go, Vector3 localEndPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
-
-            return MoveLocal(go, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
-        }
-
-        public static Coroutine SmoothstepMoveUI(this GameObject go, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
-            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
-
-            return MoveUI(go, targetAnchoredPosition, duration, tSmoothStepFunc, onMoveEnd);
-        }
-
-        public static Coroutine SmoothDampMove(this GameObject go, Vector3 endPosition, float duration, Vector3 startVelocity, Action onMoveEnd = null) {
-            return go.StartCoroutine(SmoothDampCoroutine(go.transform, endPosition, startVelocity, duration, onMoveEnd));
-        }
-        #endregion
-
-
-
-        private static Coroutine Move(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
+        private static SuperCoroutine Move(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
             Vector3 startPosition = go.transform.position;
             Action<Vector3> positionSetterFunc = (p) => go.transform.position = p;
-            Coroutine coro = go.StartCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
+            SuperCoroutine coro = go.StartStoppableCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
             return coro;
         }
 
-        private static Coroutine MoveLocal(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
+        private static SuperCoroutine MoveLocal(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
             Vector3 startPosition = go.transform.localPosition;
             Action<Vector3> positionSetterFunc = (p) => go.transform.localPosition = p;
-            Coroutine coro = go.StartCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
+            SuperCoroutine coro = go.StartStoppableCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
             return coro;
         }
 
-        private static Coroutine MoveUI(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
+        private static SuperCoroutine MoveUI(this GameObject go, Vector3 endPosition, float duration, Func<float, float> tFunc, Action onMoveEnd) {
             Vector3 startPosition = go.transform.localPosition;
             Action<Vector3> positionSetterFunc = (p) => go.GetComponent<RectTransform>().anchoredPosition = p;
-            Coroutine coro = go.StartCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
+            SuperCoroutine coro = go.StartStoppableCoroutine(LerpCoroutine(positionSetterFunc, startPosition, endPosition, duration, tFunc, onMoveEnd));
             return coro;
         }
 
@@ -183,11 +134,101 @@ namespace OranUnityUtils
             }
             onMoveEnd.Do(x => x());
         }
+      
+        #region Functions
 
+        public static SuperCoroutine LerpMove(this GameObject go, Vector3 endPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tLinearFunc = (t) => { return t; };
 
+            return Move(go, endPosition, duration, tLinearFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine LerpMoveLocal(this GameObject go, Vector3 localEndPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tLinearFunc = (t) => { return t; };
+
+            return MoveLocal(go, localEndPosition, duration, tLinearFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine LerpMoveUI(this GameObject go, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tLinearFunc = (t) => { return t; };
+
+            return MoveUI(go, targetAnchoredPosition, duration, tLinearFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine ExponentialMove(this GameObject go, Vector3 endPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => t * t;
+
+            return Move(go, endPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine ExponentialMoveLocal(this GameObject go, Vector3 localEndPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => t * t;
+
+            return MoveLocal(go, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine ExponentialMoveUI(this GameObject go, Vector2 endPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => t * t;
+
+            return MoveUI(go, endPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine SmoothstepMove(this GameObject go, Vector3 endPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
+
+            return Move(go, endPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine SmoothstepMoveLocal(this GameObject go, Vector3 localEndPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
+
+            return MoveLocal(go, localEndPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine SmoothstepMoveUI(this GameObject go, Vector3 targetAnchoredPosition, float duration, Action onMoveEnd = null) {
+            Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
+
+            return MoveUI(go, targetAnchoredPosition, duration, tSmoothStepFunc, onMoveEnd);
+        }
+
+        public static SuperCoroutine SmoothDampMove(this GameObject go, Vector3 endPosition, float duration, Vector3 startVelocity, Action onMoveEnd = null) {
+            return go.StartStoppableCoroutine(SmoothDampCoroutine(go.transform, endPosition, startVelocity, duration, onMoveEnd));
+        }
         #endregion
 
+        #endregion
+        
         #region Rotations
+        private static void Rotate(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
+            Quaternion startRotation = go.transform.rotation;
+            Action<Quaternion> positionSetterFunc = (p) => go.transform.rotation = p;
+            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+        }
+
+        private static void RotateLocal(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
+            Quaternion startRotation = go.transform.rotation;
+            Action<Quaternion> positionSetterFunc = (p) => go.transform.localRotation = p;
+            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+        }
+
+        private static IEnumerator LerpRotateCoroutine(Action<Quaternion> valueSetterFunc, Quaternion start, Quaternion end, float duration,
+           Func<float, float> tCurve) {
+
+            float currentLerpTime = 0f;
+
+            while (currentLerpTime < duration) {
+                yield return null;
+                currentLerpTime += Time.deltaTime;
+
+                if (currentLerpTime > duration) {
+                    currentLerpTime = duration;
+                }
+                float t = currentLerpTime / duration;
+                valueSetterFunc(Quaternion.Lerp(start, end, tCurve(t)));
+            }
+        }
+        
+
         #region Functions
         public static void LerpRotate(this GameObject go, Quaternion endRotation, float duration) {
             Func<float, float> tLinearFunc = (t) => { return t; };
@@ -214,39 +255,19 @@ namespace OranUnityUtils
         }
         #endregion
 
+        #endregion
 
-        private static void Rotate(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
-            Quaternion startRotation = go.transform.rotation;
-            Action<Quaternion> positionSetterFunc = (p) => go.transform.rotation = p;
-            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
-        }
+        #region Scaling
+        public static SuperCoroutine LerpLocalScale(this GameObject go, Vector3 endLocalScale, float duration, Action onScaleEnd = null) {
+            Func<float, float> tLinearFunc = (t) => { return t; };
+            Vector3 startScale = go.transform.localScale;
+            Action<Vector3> scaleSetterFunction = (p) => go.transform.localScale = p;
 
-        private static void RotateLocal(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
-            Quaternion startRotation = go.transform.rotation;
-            Action<Quaternion> positionSetterFunc = (p) => go.transform.localRotation = p;
-            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
-        }
-
-        private static IEnumerator LerpRotateCoroutine(Action<Quaternion> valueSetterFunc, Quaternion start, Quaternion end, float duration,
-            Func<float, float> tCurve) {
-
-            float currentLerpTime = 0f;
-
-            while (currentLerpTime < duration) {
-                yield return null;
-                currentLerpTime += Time.deltaTime;
-
-                if (currentLerpTime > duration) {
-                    currentLerpTime = duration;
-                }
-                float t = currentLerpTime / duration;
-                valueSetterFunc(Quaternion.Lerp(start, end, tCurve(t)));
-            }
+            return go.AddOrGetComponent<CoroutineHelper>().StartStoppableCoroutine(LerpCoroutine(scaleSetterFunction, startScale, endLocalScale, duration, tLinearFunc, onScaleEnd));
         }
         #endregion
 
         #endregion
-
     }
 }
 
