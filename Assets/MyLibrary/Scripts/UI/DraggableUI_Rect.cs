@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿//Uncommenting this line will make the class work with mouse as opposed to touches
+//#define MOUSEINPUT
+
+using UnityEngine;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,11 +65,16 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 			}
 
 			if (Time.time - timeWhenPressed > dragDelay) {
+#if (UNITY_EDITOR || MOUSEINPUT)
+                Vector2 position = Input.mousePosition;
+                myRb.MovePosition(position);
+
+#else
                 if (InputEx.GetTouchById(draggingTouchIndex).HasValue) {
                     Vector2 position = InputEx.GetTouchById(draggingTouchIndex).Value.position;
                     myRb.MovePosition(position);
                 }
-
+#endif
             }
 		}
 		prevPosition = this.transform.position;
@@ -76,15 +84,19 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	}
 
 	public bool DragTouchEnded() {
-		try{
-			Touch temp = Input.GetTouch(draggingTouchIndex);
-			return false;
+#if (UNITY_EDITOR || MOUSEINPUT)
+        return Input.GetMouseButton(0)==false;
+#else
+        try {
+            Touch temp = Input.GetTouch(draggingTouchIndex);
+        return false;
 		} catch {
 			return true;
 		}
-	}
+#endif
+    }
 
-	public void OnPointerDown(PointerEventData data) {
+    public void OnPointerDown(PointerEventData data) {
 		pressPosition = myRb.position;
 		timeWhenPressed = Time.time;
 		isPressed = true;
