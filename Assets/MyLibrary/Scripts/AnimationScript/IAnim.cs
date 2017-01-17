@@ -25,6 +25,5 @@ public abstract class IAnim {
         animationsInParallel.AddRange(animations);
         return new AnimParallel( animationsInParallel.ToArray() );
     }
-    
 
 }

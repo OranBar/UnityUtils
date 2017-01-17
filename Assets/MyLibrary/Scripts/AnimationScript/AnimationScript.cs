@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using IMX.ExtensionMethods;
+using OranUnityUtils;
 
 public class AnimationScript : IAnim {
 

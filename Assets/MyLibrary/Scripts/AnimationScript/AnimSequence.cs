@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using IMX.ExtensionMethods;
+using OranUnityUtils;
 using UnityEngine.Events;
 
 public class AnimSequence : IAnim {

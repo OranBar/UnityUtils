@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using IMX.ExtensionMethods;
+using OranUnityUtils;
 
 public class AnimParallel : IAnim {
 
