@@ -35,7 +35,7 @@ public abstract class HiearchyOp : MonoBehaviour {
 	private void Single(Transform transf){
 		if(onlyIfNameContains.Length == 0 || (onlyIfNameContains.Length > 0 && transf.name.Contains(onlyIfNameContains) )){
 			if(ignoreIfNameContains.Length == 0 || !(ignoreIfNameContains.Length > 0 && transf.name.Contains(ignoreIfNameContains) )){
-				SingleHook(transf);
+                SingleElementHook(transf);
 			}
 		} 
 	}

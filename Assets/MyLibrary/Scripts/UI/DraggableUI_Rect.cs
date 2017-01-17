@@ -33,8 +33,6 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	private Rigidbody2D myRb;
 	private Vector3 prevPosition;
 
-	private int draggingTouchIndex = -1;
-
 	protected virtual void Awake() {
 		if (disableButtonOnDrag == null) {
 			disableButtonOnDrag = GetComponent<Button>();
@@ -100,7 +98,6 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 		pressPosition = myRb.position;
 		timeWhenPressed = Time.time;
 		isPressed = true;
-		draggingTouchIndex = data.pointerId;
 	}
 
 	public void PointerUp() {

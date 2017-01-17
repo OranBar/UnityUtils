@@ -51,7 +51,6 @@ public class ModelViewerUI : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     private float timeToIdle;
     private const float TIME_TO_IDLE = 0.5F;
 
-    private float mousewheel = 0.0F;
 
     void Awake() {
 

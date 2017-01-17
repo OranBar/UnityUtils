@@ -63,6 +63,16 @@ public class SuperCoroutine<T> : CustomYieldInstruction {
 	}
 }
 
+public class NoReturn
+{
+
+}
+
+public class SuperCoroutine : SuperCoroutine<NoReturn>
+{
+
+}
+
 public class CoroutineStoppedException: System.Exception{
 	public CoroutineStoppedException() : base("Coroutine was aborted"){
 		

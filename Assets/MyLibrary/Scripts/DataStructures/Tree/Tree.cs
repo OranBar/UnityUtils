@@ -22,7 +22,7 @@ public class Tree<E> {
         
         foreach (E nodeValue in valuesGetter.GetNodesValues()) {
             E parentValue = valuesGetter.GetParentValue(nodeValue);
-            TreeNode<E> node = new TreeNode<E>(nodeValue, FindNode(parentValue));
+            new TreeNode<E>(nodeValue, FindNode(parentValue));
         }
     }
 

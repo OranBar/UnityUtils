@@ -27,8 +27,6 @@ public abstract class RadialButtonSelector<E> : MonoBehaviour {
     public TreeNode<E> CurrentMiddleNode { get; protected set; }
 
     protected RectTransform myRectTransform;
-    
-    private Transform linesContainer;
 
     protected abstract ATreeValuesGetter<E> TreeValuesGetter { get; set; }
     protected abstract IRadialSelectorAnimations<E> SelectorAnimator { get; set; }
@@ -36,7 +34,7 @@ public abstract class RadialButtonSelector<E> : MonoBehaviour {
     protected abstract string GetDisplayName(TreeNode<E> node);
 
     protected virtual void Start () {
-        linesContainer = new GameObject("Lines Container").transform;
+        new GameObject("Lines Container");
 
         myRectTransform = GetComponent<RectTransform>();
         NodeToButton = new Dictionary<TreeNode<E>, GameObject>();

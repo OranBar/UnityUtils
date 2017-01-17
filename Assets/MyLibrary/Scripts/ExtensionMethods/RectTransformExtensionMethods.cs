@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace IMX.ExtensionMethods
+namespace OranUnityUtils
 {
     public static class RectTransformExtensionMethods {
         
