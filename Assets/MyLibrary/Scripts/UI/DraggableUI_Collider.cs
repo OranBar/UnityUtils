@@ -16,7 +16,9 @@ public enum ColliderType {
 [RequireComponent(typeof(Rigidbody2D))]
 public class DraggableUI_Collider: MonoBehaviour {
 
-    public ColliderType dragAreaCollider;
+    [Tooltip("The class will work fine if the parameter is null. If this parameter is null, the class will grab a reference to a Collider2D on this object, if it exists, or create it.")]
+    public Collider2D areaCollider;
+    public ColliderType dragAreaColliderType;
     public bool fitColliderToThisObj;
     [Tooltip("The class will work fine if the parameter is null. If this parameter is null, the class will grab a reference to a button component on this object, if it exists. ")]
     public Button disableButtonOnDrag;
@@ -24,6 +26,7 @@ public class DraggableUI_Collider: MonoBehaviour {
     public bool useDrag = true;
     public float releaseDrag = 0.95f;
     public float speedMultOnRelease = 25f;
+    public bool makeKinematicWhileDragging = false;
 
     protected bool isPressed = false;
     protected RectTransform myRectTransform;
@@ -48,10 +51,11 @@ public class DraggableUI_Collider: MonoBehaviour {
         if (disableButtonOnDrag == null) {
             disableButtonOnDrag = GetComponent<Button>();
         }
+        
         myRb = GetComponent<Rigidbody2D>();
         prevPosition = new List<Vector3>();
 
-        switch (dragAreaCollider) {
+        switch (dragAreaColliderType) {
             case ColliderType.Circle2D:
                 this.gameObject.AddOrGetComponent<CircleCollider2D>();
                 break;
@@ -66,7 +70,7 @@ public class DraggableUI_Collider: MonoBehaviour {
 
         if (fitColliderToThisObj) {
 
-            switch (dragAreaCollider) {
+            switch (dragAreaColliderType) {
                 case ColliderType.Circle2D:
                     this.gameObject.GetComponent<CircleCollider2D>().radius = myRectTransform.sizeDelta.x / 2;
                     break;
@@ -128,7 +132,7 @@ public class DraggableUI_Collider: MonoBehaviour {
         var hits = Physics2D.RaycastAll(screenPoint, Camera.main.transform.forward, Mathf.Infinity);
 		if(hits.Length > 0){
 			foreach (RaycastHit2D hit in hits) {
-				if (hit.collider.gameObject == this.gameObject) {
+				if (hit.collider == areaCollider) {
 					return true;
 				}
 			}
@@ -139,7 +143,7 @@ public class DraggableUI_Collider: MonoBehaviour {
 			if(touch.phase != TouchPhase.Began) { continue; }
             Ray ray = Camera.main.ScreenPointToRay(touch.position);
 				foreach (RaycastHit2D hit in Physics2D.RaycastAll(touch.position, Camera.main.transform.forward, Mathf.Infinity)) {
-                if (hit.collider.gameObject == this.gameObject) {
+                if (hit.collider == areaCollider) {
                     draggingTouchIndex = touch.fingerId;
                     return true;
                 }
@@ -163,6 +167,8 @@ public class DraggableUI_Collider: MonoBehaviour {
 #endif
     }
 
+    public Dictionary<Rigidbody2D, RigidbodyType2D> rbToBodyType = new Dictionary<Rigidbody2D, RigidbodyType2D>();
+
     public void PointerDown() {
 		pressPosition = myRb.position;
 		timeWhenPressed = Time.time;
@@ -172,6 +178,15 @@ public class DraggableUI_Collider: MonoBehaviour {
 #else
 		pressOffsetFromCenter = (Vector3) InputEx.GetTouchById (draggingTouchIndex).Value.position - this.transform.position;
 #endif
+        if (makeKinematicWhileDragging) {
+            rbToBodyType.Clear();
+            foreach(Rigidbody2D rb in this.GetComponentsInChildren<Rigidbody2D>()) {
+                rbToBodyType.Add(rb, rb.bodyType);
+                rb.bodyType = RigidbodyType2D.Kinematic;
+            }
+        }
+        
+
 	}
     
 	/*
@@ -193,6 +208,13 @@ public class DraggableUI_Collider: MonoBehaviour {
             this.WaitForSeconds_Coro(buttonReEnableDelay),
             this.ToIEnum(() => disableButtonOnDrag.Do(b => b.interactable = true))
         );
+
+        if (makeKinematicWhileDragging) {
+            foreach (Rigidbody2D rb in this.GetComponentsInChildren<Rigidbody2D>()) {
+                rb.bodyType = rbToBodyType[rb];
+            }
+        }
+
     }
 }
 
