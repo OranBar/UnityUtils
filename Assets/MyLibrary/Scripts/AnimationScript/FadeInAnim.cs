@@ -1,12 +1,15 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using OranUnityUtils;
 
-public class FadeInAnim : AnimationScript {
 
-    public FadeInAnim(GameObject objToFade, float duration) {
-        FadeInUIElement fader = objToFade.AddOrGetComponent<FadeInUIElement>();
-        Init(objToFade, fader.FadeIn_Coro(duration));
+namespace OranUnityUtils 
+{
+    public class FadeInAnim : AnimationScript {
+
+        public FadeInAnim(GameObject objToFade, float duration) {
+            FaderUI fader = objToFade.AddOrGetComponent<FaderUI>();
+            Init(objToFade, fader.FadeIn_Coro(duration));
+        }
     }
 }

@@ -2,14 +2,10 @@
 //#define MOUSEINPUT
 
 using UnityEngine;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using OranUnityUtils;
-using System;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
@@ -31,14 +27,21 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	private float minDragDistanceToDisableButton = 20f;
 	private float timeWhenPressed;
 	private Rigidbody2D myRb;
-	private Vector3 prevPosition;
+	private List<Vector3> prevPosition;
+
+    private const int prevPositionsBuffer = 3;
+
+	private int draggingTouchIndex = -1;
+	private Vector3 pressOffsetFromCenter;
+
 
 	protected virtual void Awake() {
 		if (disableButtonOnDrag == null) {
 			disableButtonOnDrag = GetComponent<Button>();
 		}
 		myRb = GetComponent<Rigidbody2D>();
-	}
+        prevPosition = new List<Vector3>();
+    }
 
 	protected virtual void Start() {
 		myRectTransform = GetComponent<RectTransform>();
@@ -64,18 +67,21 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 
 			if (Time.time - timeWhenPressed > dragDelay) {
 #if (UNITY_EDITOR || MOUSEINPUT)
-                Vector2 position = Input.mousePosition;
-                myRb.MovePosition(position);
+				Vector3 position = (Vector3) Input.mousePosition;
+				myRb.MovePosition(position - pressOffsetFromCenter);
 
 #else
                 if (InputEx.GetTouchById(draggingTouchIndex).HasValue) {
-                    Vector2 position = InputEx.GetTouchById(draggingTouchIndex).Value.position;
-                    myRb.MovePosition(position);
+					Vector3 position = (Vector3) InputEx.GetTouchById(draggingTouchIndex).Value.position;
+					myRb.MovePosition(position - pressOffsetFromCenter);
                 }
 #endif
             }
 		}
-		prevPosition = this.transform.position;
+        if(prevPosition.Count >= prevPositionsBuffer) {
+            prevPosition.RemoveAt(0);
+        }
+		prevPosition.Add(this.transform.position);
 		if (useDrag) {
 			myRb.velocity *= releaseDrag;
 		}
@@ -87,7 +93,7 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 #else
         try {
             Touch temp = Input.GetTouch(draggingTouchIndex);
-        return false;
+        	return false;
 		} catch {
 			return true;
 		}
@@ -98,12 +104,18 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 		pressPosition = myRb.position;
 		timeWhenPressed = Time.time;
 		isPressed = true;
+		draggingTouchIndex = data.pointerId;
+#if (UNITY_EDITOR || MOUSEINPUT)
+		pressOffsetFromCenter = (Input.mousePosition - this.transform.position);
+#else
+		pressOffsetFromCenter = (Vector3) InputEx.GetTouchById (draggingTouchIndex).Value.position - this.transform.position;
+#endif
 	}
 
 	public void PointerUp() {
 		isPressed = false;
 		if (useDrag) {
-			myRb.velocity = this.transform.position - prevPosition;
+			myRb.velocity = this.transform.position - prevPosition[0];
 			myRb.velocity *= speedMultOnRelease;
 		}
 		this.StartCoroutineTimeline(
