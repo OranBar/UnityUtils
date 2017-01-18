@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 
 
 
-namespace IMX.ExtensionMethods
+namespace OranUnityUtils
 {
 	public static class MonoBehaviourExtensionMethods
 	{

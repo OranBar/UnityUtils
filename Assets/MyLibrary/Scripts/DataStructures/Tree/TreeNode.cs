@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
 
 
-#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
 public class TreeNode<E> {
-#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
-#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
 
     public static int nodeId = 0;
     
@@ -83,6 +79,11 @@ public class TreeNode<E> {
         return 17 * Id.GetHashCode();
     }
     */
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 
     public static bool operator ==(TreeNode<E> a, TreeNode<E> b) {
         // If both are null, or both are same instance, return true.

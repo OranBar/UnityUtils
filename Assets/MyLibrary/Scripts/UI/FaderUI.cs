@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using IMX.ExtensionMethods;
+using OranUnityUtils;
 
 /**<summary>Add this behaviour to a GameObject (via inspector or AddComponent), then call FadeIn and FadeOut </summary>
  * 

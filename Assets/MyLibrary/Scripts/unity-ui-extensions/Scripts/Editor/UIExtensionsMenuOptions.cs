@@ -660,7 +660,7 @@ namespace UnityEditor.UI
             inputFieldRT.anchorMin = Vector2.zero;
             inputFieldRT.anchorMax = Vector2.one;
             inputFieldRT.sizeDelta = Vector2.zero;
-            Events.UnityEventTools.AddPersistentListener<string>(inputField.GetComponent<InputField>().onValueChange, new UnityEngine.Events.UnityAction<string>(autoCompleteComboBox.OnValueChanged));
+            Events.UnityEventTools.AddPersistentListener<string>(inputField.GetComponent<InputField>().onValueChanged, new UnityEngine.Events.UnityAction<string>(autoCompleteComboBox.OnValueChanged));
 
             //Setup Overlay
             var overlayRT = overlay.GetComponent<RectTransform>();
@@ -668,7 +668,7 @@ namespace UnityEditor.UI
             overlayRT.anchorMax = new Vector2(0f, 1f);
             overlayRT.sizeDelta = new Vector2(0f, 1f);
             overlayRT.pivot = new Vector2(0f, 1f);
-            overlay.AddComponent<Image>().color = new Color(0.243f, 0.871f, 0f, 0f);
+            overlay.AddComponent<Image>().color = new Color(0.243f, 0.871f, 0f, 0f); 
             Events.UnityEventTools.AddBoolPersistentListener(overlay.AddComponent<Button>().onClick, new UnityEngine.Events.UnityAction<bool>(autoCompleteComboBox.ToggleDropdownPanel), true);
             //Overlay Scroll Panel
             var overlayScrollPanelRT = overlayScrollPanel.GetComponent<RectTransform>();
@@ -756,7 +756,7 @@ namespace UnityEditor.UI
             inputFieldRT.anchorMin = Vector2.zero;
             inputFieldRT.anchorMax = Vector2.one;
             inputFieldRT.sizeDelta = Vector2.zero;
-            Events.UnityEventTools.AddPersistentListener<string>(inputField.GetComponent<InputField>().onValueChange, new UnityEngine.Events.UnityAction<string>(comboBox.OnValueChanged));
+            Events.UnityEventTools.AddPersistentListener<string>(inputField.GetComponent<InputField>().onValueChanged, new UnityEngine.Events.UnityAction<string>(comboBox.OnValueChanged));
 
             //Setup Overlay
             var overlayRT = overlay.GetComponent<RectTransform>();

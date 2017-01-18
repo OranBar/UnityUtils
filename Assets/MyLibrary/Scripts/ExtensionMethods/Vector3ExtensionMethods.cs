@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace IMX.ExtensionMethods
+namespace OranUnityUtils
 {
 	public static class Vector3ExtensionMethods {
 

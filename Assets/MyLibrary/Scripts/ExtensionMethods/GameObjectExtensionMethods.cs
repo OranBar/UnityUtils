@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 
 
-namespace IMX.ExtensionMethods 
+namespace OranUnityUtils 
 {
     public static class GameObjectExtensionMethods {
 
