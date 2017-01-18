@@ -2,7 +2,10 @@
 using System.Collections;
 using IMX.ExtensionMethods;
 
-public class FadeInUIElement : MonoBehaviour {
+/**<summary>Add this behaviour to a GameObject (via inspector or AddComponent), then call FadeIn and FadeOut </summary>
+ * 
+ */
+public class FaderUI : MonoBehaviour {
 
     private CanvasGroup myCanvasGroup;
 
@@ -13,7 +16,7 @@ public class FadeInUIElement : MonoBehaviour {
             Debug.LogWarning("Can't add a canvas group on this GameObject. FadeInUIElement only works on UI elements");
             this.enabled = false;
         }
-        if (gameObject.GetComponents<FadeInUIElement>().Length > 1) {
+        if (gameObject.GetComponents<FaderUI>().Length > 1) {
             Debug.LogWarning("Only one instance of FadeInUiElement is allowed per single GameObject. I'll go ahead and clean your mess by destroying the duplicate");
             Destroy(this);
         }

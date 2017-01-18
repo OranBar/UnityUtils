@@ -31,7 +31,9 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	private float minDragDistanceToDisableButton = 20f;
 	private float timeWhenPressed;
 	private Rigidbody2D myRb;
-	private Vector3 prevPosition;
+	private List<Vector3> prevPosition;
+
+    private const int prevPositionsBuffer = 3;
 
 	private int draggingTouchIndex = -1;
 
@@ -40,7 +42,9 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 			disableButtonOnDrag = GetComponent<Button>();
 		}
 		myRb = GetComponent<Rigidbody2D>();
-	}
+        prevPosition = new List<Vector3>();
+
+    }
 
 	protected virtual void Start() {
 		myRectTransform = GetComponent<RectTransform>();
@@ -77,7 +81,10 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 #endif
             }
 		}
-		prevPosition = this.transform.position;
+        if(prevPosition.Count >= prevPositionsBuffer) {
+            prevPosition.RemoveAt(0);
+        }
+		prevPosition.Add(this.transform.position);
 		if (useDrag) {
 			myRb.velocity *= releaseDrag;
 		}
@@ -106,7 +113,7 @@ public class DraggableUI_Rect: MonoBehaviour, IPointerDownHandler {
 	public void PointerUp() {
 		isPressed = false;
 		if (useDrag) {
-			myRb.velocity = this.transform.position - prevPosition;
+			myRb.velocity = this.transform.position - prevPosition[0];
 			myRb.velocity *= speedMultOnRelease;
 		}
 		this.StartCoroutineTimeline(
