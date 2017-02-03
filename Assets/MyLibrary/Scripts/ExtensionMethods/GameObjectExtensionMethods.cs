@@ -199,16 +199,16 @@ namespace OranUnityUtils
         #endregion
         
         #region Rotations
-        private static void Rotate(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
+        private static SuperCoroutine Rotate(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
             Quaternion startRotation = go.transform.rotation;
             Action<Quaternion> positionSetterFunc = (p) => go.transform.rotation = p;
-            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+            return go.StartStoppableCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
         }
 
-        private static void RotateLocal(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
+        private static SuperCoroutine RotateLocal(this GameObject go, Quaternion endRotation, float duration, Func<float, float> tFunc) {
             Quaternion startRotation = go.transform.rotation;
             Action<Quaternion> positionSetterFunc = (p) => go.transform.localRotation = p;
-            go.StartCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
+            return go.StartStoppableCoroutine(LerpRotateCoroutine(positionSetterFunc, startRotation, endRotation, duration, tFunc));
         }
 
         private static IEnumerator LerpRotateCoroutine(Action<Quaternion> valueSetterFunc, Quaternion start, Quaternion end, float duration,
@@ -230,28 +230,28 @@ namespace OranUnityUtils
         
 
         #region Functions
-        public static void LerpRotate(this GameObject go, Quaternion endRotation, float duration) {
+        public static SuperCoroutine LerpRotate(this GameObject go, Quaternion endRotation, float duration) {
             Func<float, float> tLinearFunc = (t) => { return t; };
 
-            Rotate(go, endRotation, duration, tLinearFunc);
+            return Rotate(go, endRotation, duration, tLinearFunc);
         }
 
-        public static void LerpRotateLocal(this GameObject go, Quaternion localEndRotation, float duration) {
+        public static SuperCoroutine LerpRotateLocal(this GameObject go, Quaternion localEndRotation, float duration) {
             Func<float, float> tLinearFunc = (t) => { return t; };
 
-            RotateLocal(go, localEndRotation, duration, tLinearFunc);
+            return RotateLocal(go, localEndRotation, duration, tLinearFunc);
         }
 
-        public static void SmoothstepRotate(this GameObject go, Quaternion endPosition, float duration) {
+        public static SuperCoroutine SmoothstepRotate(this GameObject go, Quaternion endPosition, float duration) {
             Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
 
-            Rotate(go, endPosition, duration, tSmoothStepFunc);
+            return Rotate(go, endPosition, duration, tSmoothStepFunc);
         }
 
-        public static void SmoothstepRotateLocal(this GameObject go, Quaternion localEndPosition, float duration) {
+        public static SuperCoroutine SmoothstepRotateLocal(this GameObject go, Quaternion localEndPosition, float duration) {
             Func<float, float> tSmoothStepFunc = (t) => { return t * t * t * (t * (6f * t - 15f) + 10f); };
 
-            RotateLocal(go, localEndPosition, duration, tSmoothStepFunc);
+            return RotateLocal(go, localEndPosition, duration, tSmoothStepFunc);
         }
         #endregion
 
